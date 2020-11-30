@@ -15,10 +15,23 @@ using namespace std;
 #define MAP_FLOOR 0
 #define MAP_WALL 1
 #define MAP_WARRIOR 2
+
 //door
-#define DOOR_YELLOW 100
-#define DOOR_BLUE 101
-#define DOOR_RED 102
+#define DOOR_MIN 100
+#define DOOR_YELLOW 101
+#define DOOR_BLUE 102
+#define DOOR_RED 103
+#define DOOR_MAX 104
+
+//item
+#define ITEM_MIN 10000
+//TODO items
+#define ITEM_MAX 20000
+
+//monster
+#define MONSTER_MIN 20000
+//TODO monsters
+#define MONSTER_MAX 30000
 
 //char map[MAP_SIZE][MAP_SIZE] =
 //{
@@ -37,10 +50,10 @@ using namespace std;
 
 char map[MAP_SIZE][MAP_SIZE] =
 {
-	{0,0,0,1,0,0,0,1,0,0,0},
-	{0,0,0,1,0,0,0,1,0,0,0},
-	{0,0,0,1,0,0,0,1,0,0,0},
-	{1,100,1,1,1,101,1,1,1,102,1},
+	{0,101,0,1,0,102,0,1,0,103,0},
+	{0,101,0,1,0,102,0,1,0,103,0},
+	{0,101,0,1,0,102,0,1,0,103,0},
+	{1,101,1,1,1,102,1,1,1,103,1},
 	{0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,0,0,0,0,0,0,0,0},
@@ -61,7 +74,7 @@ int keyYellow = 3;
 int keyBlue = 3;
 int KeyRed = 3;
 
-
+//key code on Windows
 enum KeyCode
 {
 	Left_Arrow = 75,
@@ -70,6 +83,7 @@ enum KeyCode
 	Down_Arrow = 80
 };
 
+//position
 enum Position
 {
 	Position_Left,
@@ -81,7 +95,7 @@ enum Position
 void printMap();
 void printWarriorStatus();
 void movePosition(int position);
-void hitItem();
+bool hitItem(int item);
 int main()
 {
 	printMap();
@@ -128,6 +142,7 @@ int main()
 void printMap()
 {
 	//上一个位置设置为地板
+	//TODO 其他地形检测
 	map[positionLastX][positionLastY] = MAP_FLOOR;
 	//移动到新的位置
 	map[positionX][positionY] = MAP_WARRIOR;
@@ -172,71 +187,80 @@ void printMap()
 
 void printWarriorStatus()
 {
-	cout << "Position:" << endl;
-	cout << "x=" << positionX << ",y=" << positionY << endl;
-	cout << "Keys:" << endl;
-	cout << "Yelow=" << keyYellow << endl;
-	cout << "Blue=" << keyBlue << endl;
-	cout << "Red=" << KeyRed << endl;
+	//位置
+	cout << "位置:" << endl;
+	cout << "x座标=" << positionX << ",y座标=" << positionY << endl;
+	cout << endl;
+	//钥匙
+	cout << "钥匙:" << endl;
+	cout << "黄钥匙=" << keyYellow << endl;
+	cout << "蓝钥匙=" << keyBlue << endl;
+	cout << "红钥匙=" << KeyRed << endl;
 }
 
 void movePosition(int position)
 {
+	//面向的物体
+	int faceToItem = -1;
 	switch (position)
 	{
 	case Position_Left:
-		//left
+		//左
 		if (positionY > 0)
 		{
-			if (map[positionX][positionY - 1] == MAP_FLOOR)
+			faceToItem = map[positionX][positionY - 1];
+			if (faceToItem == MAP_FLOOR)
 			{
 				positionY -= 1;
 			}
-			else
+			else if(hitItem(faceToItem))
 			{
-				hitItem();
+				positionY -= 1;
 			}
 		}
 		break;
 	case Position_Up:
-		//up
+		//上
 		if (positionX > 0)
 		{
-			if (map[positionX - 1][positionY] == MAP_FLOOR)
+			faceToItem = map[positionX - 1][positionY];
+			if (faceToItem == MAP_FLOOR)
 			{
 				positionX -= 1;
 			}
-			else 
+			else if(hitItem(faceToItem))
 			{
-				hitItem();
+				positionX -= 1;
 			}
 		}
 		break;
 	case Position_Right:
-		//right
+		//右
 		if (positionY < MAP_SIZE - 1)
 		{
-			if (map[positionX][positionY + 1] == MAP_FLOOR)
+			faceToItem = map[positionX][positionY + 1];
+			if (faceToItem == MAP_FLOOR)
 			{
 				positionY += 1;
 			}
-			else
+			else if(hitItem(faceToItem))
 			{
-				hitItem();
+				positionY += 1;
 			}
 		}
 		break;
 	case Position_Down:
-		//down
+		//下
 		if (positionX < MAP_SIZE - 1)
 		{
-			if (map[positionX + 1][positionY] == MAP_FLOOR)
+			faceToItem = map[positionX + 1][positionY];
+			if (faceToItem == MAP_FLOOR)
 			{
 				positionX += 1;
 			}
-			else
+			else if(hitItem(faceToItem))
 			{
-				hitItem();
+				positionX += 1;
 			}
 		}
 		break;
@@ -245,7 +269,38 @@ void movePosition(int position)
 	}
 }
 
-void hitItem()
+bool hitItem(int item)
 {
+	//如果id范围为门
+	if (item > DOOR_MIN && item < DOOR_MAX)
+	{
+		switch (item)
+		{
+		case DOOR_YELLOW:
+			if (keyYellow >= 1)
+			{
+				keyYellow--;
+				return true;
+			}
+			break;
+		case DOOR_BLUE:
+			if (keyBlue >= 1)
+			{
+				keyBlue--;
+				return true;
+			}
+			break;
+		case DOOR_RED:
+			if (KeyRed >= 1)
+			{
+				KeyRed--;
+				return true;
+			}
+			break;
+		default:
+			break;
+		}
+	}
 
+	return false;
 }
