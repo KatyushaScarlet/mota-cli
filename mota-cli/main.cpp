@@ -7,6 +7,8 @@ using namespace std;
 #include <cstdlib>
 //for string
 #include <string> 
+//for cin cout endl
+#include<iostream>
 
 //map struct
 #define MAP_SIZE 11
@@ -57,7 +59,7 @@ int positionLastY = positionY;
 //keys
 int keyYellow = 3;
 int keyBlue = 3;
-int Keyred = 3;
+int KeyRed = 3;
 
 
 enum KeyCode
@@ -79,9 +81,13 @@ enum Position
 void printMap();
 void printWarriorStatus();
 void movePosition(int position);
+void hitItem();
 int main()
 {
 	printMap();
+	cout << endl;
+	printWarriorStatus();
+
 	while (true)
 	{
 		string messageStatus = "";
@@ -113,6 +119,8 @@ int main()
 
 			system("cls");
 			printMap();
+			cout << endl;
+			printWarriorStatus();
 		}
 	}
 }
@@ -164,7 +172,12 @@ void printMap()
 
 void printWarriorStatus()
 {
-
+	cout << "Position:" << endl;
+	cout << "x=" << positionX << ",y=" << positionY << endl;
+	cout << "Keys:" << endl;
+	cout << "Yelow=" << keyYellow << endl;
+	cout << "Blue=" << keyBlue << endl;
+	cout << "Red=" << KeyRed << endl;
 }
 
 void movePosition(int position)
@@ -179,6 +192,10 @@ void movePosition(int position)
 			{
 				positionY -= 1;
 			}
+			else
+			{
+				hitItem();
+			}
 		}
 		break;
 	case Position_Up:
@@ -188,6 +205,10 @@ void movePosition(int position)
 			if (map[positionX - 1][positionY] == MAP_FLOOR)
 			{
 				positionX -= 1;
+			}
+			else 
+			{
+				hitItem();
 			}
 		}
 		break;
@@ -199,6 +220,10 @@ void movePosition(int position)
 			{
 				positionY += 1;
 			}
+			else
+			{
+				hitItem();
+			}
 		}
 		break;
 	case Position_Down:
@@ -209,9 +234,18 @@ void movePosition(int position)
 			{
 				positionX += 1;
 			}
+			else
+			{
+				hitItem();
+			}
 		}
 		break;
 	default:
 		break;
 	}
+}
+
+void hitItem()
+{
+
 }
